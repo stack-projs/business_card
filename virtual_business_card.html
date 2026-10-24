@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P. Ramanathan - Virtual Business Card</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            800: '#0b192c',
+                            900: '#070f1e',
+                            950: '#030712'
+                        },
+                        cyan: {
+                            400: '#38bdf8',
+                            500: '#06b6d4',
+                            600: '#0891b2'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- QRCode JS Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Glassmorphism effects */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .light .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        /* Subtle animated background waves */
+        .ocean-bg {
+            background-size: 400% 400%;
+            animation: gradientMove 15s ease infinite;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Grid lines overlay */
+        .cyber-grid {
+            background-image: linear-gradient(to right, rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        /* Toast notification animation */
+        #toast {
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-navy-950 text-slate-100 min-h-screen ocean-bg cyber-grid flex flex-col items-center justify-between p-4 sm:p-6 transition-colors duration-300">
+
+    <!-- Top Navigation Header -->
+    <header class="w-full max-w-lg flex justify-between items-center mb-4 pt-2 px-1">
+        <div class="flex items-center gap-2">
+            <span class="p-2 bg-cyan-500/10 rounded-xl border border-cyan-500/30 text-cyan-400">
+                <i class="fa-solid font-bold fa-anchor text-lg"></i>
+            </span>
+            <span class="font-semibold text-xs tracking-widest text-slate-400 uppercase">MARITIME TECH</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <button id="copyInfoBtn" onclick="copyContactSummary()" class="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center justify-center gap-2 text-xs font-medium" title="Copy Contact Details">
+                <i class="fa-regular fa-copy"></i>
+                <span class="hidden sm:inline">Copy Info</span>
+            </button>
+            <button id="themeToggle" onclick="toggleTheme()" class="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-cyan-400 border border-slate-700 transition" title="Toggle Theme">
+                <i class="fa-solid fa-moon text-lg" id="themeIcon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Card Container -->
+    <main class="w-full max-w-lg glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden transition-all duration-300 border border-slate-700/50">
+        
+        <!-- Subtle Top Glow Accent -->
+        <div class="absolute -top-24 -left-24 w-48 h-48 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Profile / Header Section -->
+        <div class="text-center relative z-10">
+            <!-- Avatar Badge with Initials & Maritime Icon -->
+            <div class="relative inline-block mb-4">
+                <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-tr from-cyan-600 to-blue-700 flex items-center justify-center text-white shadow-lg border-2 border-cyan-400/40 transform hover:scale-105 transition duration-300">
+                    <span class="text-3xl sm:text-4xl font-extrabold tracking-wider">PR</span>
+                </div>
+                <div class="absolute -bottom-2 -right-2 bg-navy-900 border border-cyan-400/50 p-2 rounded-xl text-cyan-400 shadow-md">
+                    <i class="fa-solid fa-ship text-sm"></i>
+                </div>
+            </div>
+
+            <!-- Name and Title -->
+            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-100 dark:text-white">P. Ramanathan</h1>
+            
+            <div class="mt-2 flex flex-col items-center gap-1">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                    CTO
+                </span>
+                <p class="text-xs sm:text-sm font-medium text-slate-400 dark:text-slate-300">
+                    Q88.com Domain Consultant at Launch
+                </p>
+            </div>
+        </div>
+
+        <!-- Value Proposition / Tagline -->
+        <div class="mt-6 p-4 rounded-2xl bg-slate-900/40 dark:bg-slate-900/60 border border-slate-800 text-center relative">
+            <i class="fa-solid fa-quote-left text-slate-700 dark:text-slate-700 absolute top-3 left-3 text-lg opacity-40"></i>
+            <p class="text-xs sm:text-sm italic text-slate-300 dark:text-slate-200 px-3 relative z-10">
+                "Bringing Shore Technology to Ships with Economics in Implementation with Cybersecurity Considerations"
+            </p>
+        </div>
+
+        <!-- Distinct Career Highlight Badge -->
+        <div class="mt-4 p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/20 flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-amber-500/10 text-amber-400 shrink-0 mt-0.5">
+                <i class="fa-solid fa-award text-base"></i>
+            </div>
+            <div>
+                <span class="text-[10px] uppercase font-bold tracking-wider text-amber-400 block mb-0.5">Career Highlight Distinction</span>
+                <p class="text-xs text-slate-300 dark:text-slate-200 font-medium leading-relaxed">
+                    Only C/Eng to have experienced a broken intermediate shaft while sailing.
+                </p>
+            </div>
+        </div>
+
+        <!-- Quick Primary Action Buttons (Call / Download vCard) -->
+        <div class="mt-6 grid grid-cols-2 gap-3">
+            <button onclick="downloadVCard()" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-cyan-500/20 transition flex items-center justify-center gap-2 border border-cyan-400/30 active:scale-95">
+                <i class="fa-solid fa-address-card text-base"></i>
+                Save to Phone (.vcf)
+            </button>
+            <button onclick="toggleQRModal()" class="w-full py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 font-semibold text-xs sm:text-sm transition flex items-center justify-center gap-2 border border-slate-700 active:scale-95">
+                <i class="fa-solid fa-qrcode text-base"></i>
+                Show QR Code
+            </button>
+        </div>
+
+        <!-- Detailed Contact Links -->
+        <div class="mt-6 space-y-3">
+            
+            <!-- Phone 1: Singapore -->
+            <div class="p-3 rounded-2xl bg-slate-900/40 dark:bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Singapore</span>
+                            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+                        </div>
+                        <a href="tel:+6597224987" class="text-sm font-semibold text-slate-200 hover:text-cyan-400 transition">+65 97224987</a>
+                    </div>
+                </div>
+                <div class="flex gap-1.5">
+                    <a href="tel:+6597224987" class="p-2 rounded-lg bg-slate-800 hover:bg-emerald-600 hover:text-white text-slate-300 transition" title="Call Singapore">
+                        <i class="fa-solid fa-phone-flip text-xs"></i>
+                    </a>
+                    <a href="https://wa.me/6597224987" target="_blank" class="p-2 rounded-lg bg-slate-800 hover:bg-emerald-500 hover:text-white text-slate-300 transition" title="WhatsApp Singapore">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Phone 2: India -->
+            <div class="p-3 rounded-2xl bg-slate-900/40 dark:bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-mobile-screen"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">India</span>
+                            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+                        </div>
+                        <a href="tel:+919176856986" class="text-sm font-semibold text-slate-200 hover:text-cyan-400 transition">+91 9176856986</a>
+                    </div>
+                </div>
+                <div class="flex gap-1.5">
+                    <a href="tel:+919176856986" class="p-2 rounded-lg bg-slate-800 hover:bg-emerald-600 hover:text-white text-slate-300 transition" title="Call India">
+                        <i class="fa-solid fa-phone-flip text-xs"></i>
+                    </a>
+                    <a href="https://wa.me/919176856986" target="_blank" class="p-2 rounded-lg bg-slate-800 hover:bg-emerald-500 hover:text-white text-slate-300 transition" title="WhatsApp India">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Work Email -->
+            <div class="p-3 rounded-2xl bg-slate-900/40 dark:bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Work Email</span>
+                        <a href="mailto:sales@tridmarinus.com" class="text-xs sm:text-sm font-semibold text-slate-200 hover:text-cyan-400 transition truncate block">sales@tridmarinus.com</a>
+                    </div>
+                </div>
+                <a href="mailto:sales@tridmarinus.com" class="p-2 rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white text-slate-300 transition shrink-0" title="Email Work">
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                </a>
+            </div>
+
+            <!-- Secondary Email -->
+            <div class="p-3 rounded-2xl bg-slate-900/40 dark:bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+                        <i class="fa-regular fa-envelope"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Secondary Email</span>
+                        <a href="mailto:chengram@gmail.com" class="text-xs sm:text-sm font-semibold text-slate-200 hover:text-cyan-400 transition truncate block">chengram@gmail.com</a>
+                    </div>
+                </div>
+                <a href="mailto:chengram@gmail.com" class="p-2 rounded-lg bg-slate-800 hover:bg-indigo-600 hover:text-white text-slate-300 transition shrink-0" title="Email Secondary">
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                </a>
+            </div>
+
+            <!-- Website -->
+            <div class="p-3 rounded-2xl bg-slate-900/40 dark:bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-globe"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Website</span>
+                        <a href="https://tridmarinus.com" target="_blank" class="text-xs sm:text-sm font-semibold text-slate-200 hover:text-cyan-400 transition truncate block">tridmarinus.com</a>
+                    </div>
+                </div>
+                <a href="https://tridmarinus.com" target="_blank" class="p-2 rounded-lg bg-slate-800 hover:bg-cyan-500 hover:text-slate-900 text-slate-300 transition shrink-0" title="Visit Website">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Save to Wallet / Home Screen Help Toggle -->
+        <div class="mt-6 pt-4 border-t border-slate-800/80 text-center">
+            <button onclick="toggleGuideModal()" class="text-xs font-medium text-cyan-400 hover:text-cyan-300 transition inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-info"></i>
+                How to save this card to Home Screen / Wallet?
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-6 mb-2 text-center text-xs text-slate-400">
+        <p>© P. Ramanathan • Trid Marinus Tech</p>
+    </footer>
+
+    <!-- Interactive Modal 1: Dynamic QR Code Modal -->
+    <div id="qrModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-sm rounded-3xl p-6 relative border border-slate-700 shadow-2xl text-center">
+            <button onclick="toggleQRModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <h3 class="text-lg font-bold text-white mb-1">Scan Contact QR</h3>
+            <p class="text-xs text-slate-400 mb-4">Point mobile camera to instantly view or save details</p>
+
+            <!-- Mode Switcher Toggle for QR Code -->
+            <div class="flex bg-slate-900 p-1 rounded-xl mb-4 text-xs font-semibold border border-slate-800">
+                <button id="qrTypeVCard" onclick="switchQRType('vcard')" class="flex-1 py-1.5 rounded-lg bg-cyan-500 text-slate-950 transition">vCard Data</button>
+                <button id="qrTypeURL" onclick="switchQRType('url')" class="flex-1 py-1.5 rounded-lg text-slate-400 transition">Web Link</button>
+            </div>
+
+            <!-- Canvas Container for QR -->
+            <div class="bg-white p-4 rounded-2xl inline-block shadow-inner mb-4 relative" id="qrContainer">
+                <div id="qrcode"></div>
+            </div>
+
+            <p id="qrSubtitle" class="text-[11px] text-slate-400 mb-4">Scanning imports complete contact directly into phone address book.</p>
+
+            <button onclick="toggleQRModal()" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition">
+                Close QR View
+            </button>
+        </div>
+    </div>
+
+    <!-- Interactive Modal 2: Save to Home Screen / Wallet Guide -->
+    <div id="guideModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-md rounded-3xl p-6 relative border border-slate-700 shadow-2xl text-left">
+            <button onclick="toggleGuideModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <h3 class="text-lg font-bold text-white mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-mobile-screen-button text-cyan-400"></i>
+                Save to Smartphone
+            </h3>
+            <p class="text-xs text-slate-400 mb-4">Access this card anytime even offline</p>
+
+            <div class="space-y-4 text-xs text-slate-300">
+                <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
+                    <h4 class="font-bold text-cyan-400 mb-1 flex items-center gap-1.5">
+                        <i class="fa-brands fa-apple text-sm"></i> iPhone (Safari)
+                    </h4>
+                    <ol class="list-decimal list-inside space-y-1 text-slate-300">
+                        <li>Tap the <strong>Share</strong> button at bottom of Safari.</li>
+                        <li>Scroll down and tap <strong>"Add to Home Screen"</strong>.</li>
+                        <li>Tap <strong>Add</strong> in top right corner.</li>
+                    </ol>
+                </div>
+
+                <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
+                    <h4 class="font-bold text-cyan-400 mb-1 flex items-center gap-1.5">
+                        <i class="fa-brands fa-android text-sm"></i> Android (Chrome)
+                    </h4>
+                    <ol class="list-decimal list-inside space-y-1 text-slate-300">
+                        <li>Tap the <strong>3 dots menu</strong> at top right.</li>
+                        <li>Select <strong>"Add to Home screen"</strong> or <strong>"Install App"</strong>.</li>
+                        <li>Confirm by tapping <strong>Add</strong>.</li>
+                    </ol>
+                </div>
+
+                <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
+                    <h4 class="font-bold text-cyan-400 mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-address-book text-sm"></i> Save to Address Book
+                    </h4>
+                    <p>Simply click the <strong>"Save to Phone (.vcf)"</strong> button on the card to export contact file directly into iOS or Android Contacts.</p>
+                </div>
+            </div>
+
+            <button onclick="toggleGuideModal()" class="w-full mt-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition">
+                Got it
+            </button>
+        </div>
+    </div>
+
+    <!-- Feedback Toast Notification -->
+    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 translate-y-20 opacity-0 bg-cyan-500 text-slate-950 px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 font-semibold text-xs z-50 pointer-events-none transition-all">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toastMsg">Contact details copied to clipboard!</span>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Contact Data Structure
+        const contactData = {
+            name: "P. Ramanathan",
+            title: "CTO | Q88.com Domain Consultant at Launch",
+            org: "Trid Marinus",
+            tagline: "Bringing Shore Technology to Ships with Economics in Implementation with Cybersecurity Considerations",
+            distinction: "Only C/Eng to have experienced a broken intermediate shaft while sailing",
+            phoneSG: "+65 97224987",
+            phoneIN: "+91 9176856986",
+            emailWork: "sales@tridmarinus.com",
+            emailPersonal: "chengram@gmail.com",
+            website: "https://tridmarinus.com"
+        };
+
+        let qrcodeObj = null;
+        let currentQRType = 'vcard';
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            initQRCode();
+        });
+
+        // Theme Toggle Functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('themeIcon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            } else {
+                html.classList.remove('light');
+                html.classList.add('dark');
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            }
+        }
+
+        // vCard (.vcf) File Generation & Auto Download
+        function generateVCardString() {
+            return [
+                'BEGIN:VCARD',
+                'VERSION:3.0',
+                'N:Ramanathan;P.;;;',
+                'FN:P. Ramanathan',
+                'ORG:Trid Marinus',
+                'TITLE:CTO | Q88.com Domain Consultant at Launch',
+                'TEL;TYPE=CELL,VOICE;X-COUNTRY=SG:+6597224987',
+                'TEL;TYPE=CELL,VOICE;X-COUNTRY=IN:+919176856986',
+                'EMAIL;TYPE=WORK:' + contactData.emailWork,
+                'EMAIL;TYPE=HOME:' + contactData.emailPersonal,
+                'URL:' + contactData.website,
+                'NOTE:' + contactData.tagline + ' | ' + contactData.distinction,
+                'END:VCARD'
+            ].join('\n');
+        }
+
+        function downloadVCard() {
+            const vcardContent = generateVCardString();
+            const blob = new Blob([vcardContent], { type: 'text/vcard;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'P_Ramanathan.vcf');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast("vCard downloaded! Open to save contact.");
+        }
+
+        // QRCode Setup & Switching
+        function initQRCode() {
+            const container = document.getElementById("qrcode");
+            container.innerHTML = "";
+            qrcodeObj = new QRCode(container, {
+                text: generateVCardString(),
+                width: 180,
+                height: 180,
+                colorDark : "#070f1e",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.M
+            });
+        }
+
+        function switchQRType(type) {
+            currentQRType = type;
+            const btnVCard = document.getElementById('qrTypeVCard');
+            const btnURL = document.getElementById('qrTypeURL');
+            const subtitle = document.getElementById('qrSubtitle');
+
+            if (type === 'vcard') {
+                btnVCard.className = "flex-1 py-1.5 rounded-lg bg-cyan-500 text-slate-950 transition font-bold";
+                btnURL.className = "flex-1 py-1.5 rounded-lg text-slate-400 transition font-normal";
+                subtitle.innerText = "Scanning imports complete contact directly into phone address book.";
+                qrcodeObj.clear();
+                qrcodeObj.makeCode(generateVCardString());
+            } else {
+                btnURL.className = "flex-1 py-1.5 rounded-lg bg-cyan-500 text-slate-950 transition font-bold";
+                btnVCard.className = "flex-1 py-1.5 rounded-lg text-slate-400 transition font-normal";
+                subtitle.innerText = "Scanning opens this live interactive digital business card link.";
+                qrcodeObj.clear();
+                qrcodeObj.makeCode(window.location.href || contactData.website);
+            }
+        }
+
+        // Modal Controls
+        function toggleQRModal() {
+            const modal = document.getElementById('qrModal');
+            modal.classList.toggle('hidden');
+        }
+
+        function toggleGuideModal() {
+            const modal = document.getElementById('guideModal');
+            modal.classList.toggle('hidden');
+        }
+
+        // Copy Details Summary to Clipboard
+        function copyContactSummary() {
+            const summaryText = `P. Ramanathan
+CTO | Q88.com Domain Consultant at Launch
+SG: ${contactData.phoneSG}
+IN: ${contactData.phoneIN}
+Work Email: ${contactData.emailWork}
+Personal Email: ${contactData.emailPersonal}
+Web: ${contactData.website}`;
+
+            // Robust Clipboard execution using textarea fallback for iframe security
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = summaryText;
+            dummy.select();
+            
+            try {
+                document.execCommand("copy");
+                showToast("Contact summary copied to clipboard!");
+            } catch (err) {
+                showToast("Failed to copy automatically.");
+            }
+            document.body.removeChild(dummy);
+        }
+
+        // Toast Feedback Generator
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            
+            toastMsg.innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
